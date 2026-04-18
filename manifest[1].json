@@ -1,0 +1,9 @@
+{
+  "name": "SmartAttend",
+  "short_name": "SmartAttend",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#e04c2f",
+  "icons": []
+}
