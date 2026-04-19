@@ -1,160 +1,110 @@
-<!-- ================= FRONTEND ================= -->
+<!-- ================= FULL MERGED UI (YOUR DESIGN + AUTH) ================= -->
 <!-- Save as: templates/index.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>SmartAttend Auth</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartAttend</title>
+  <style>
+    body{font-family:Arial;margin:0}
+    nav{display:flex;justify-content:space-between;padding:15px;background:#111;color:#fff}
+    nav a{color:#fff;margin-left:15px;cursor:pointer}
+    section{padding:40px}
+
+    /* AUTH MODAL */
+    .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+    .modal-content{background:#fff;padding:25px;border-radius:10px;width:300px}
+    input,select,button{width:100%;margin:8px 0;padding:8px}
+    .close{float:right;cursor:pointer}
+  </style>
 </head>
 <body>
-  <h2>Register</h2>
-  <input id="r_name" placeholder="Name"><br>
-  <input id="r_phone" placeholder="Phone"><br>
-  <input id="r_pass" placeholder="Password" type="password"><br>
-  <select id="r_type">
-    <option value="student">Student</option>
-    <option value="teacher">Teacher</option>
-  </select><br>
-  <button onclick="register()">Register</button>
 
-  <h2>Verify OTP</h2>
-  <input id="v_phone" placeholder="Phone"><br>
-  <input id="v_otp" placeholder="OTP"><br>
-  <button onclick="verify()">Verify</button>
+<!-- NAVBAR (UPDATED) -->
+<nav>
+  <div>SmartAttend</div>
+  <div>
+    <a onclick="openModal('login')">Login</a>
+    <a onclick="openModal('register')">Register</a>
+  </div>
+</nav>
 
-  <h2>Login</h2>
-  <input id="l_phone" placeholder="Phone"><br>
-  <input id="l_pass" placeholder="Password" type="password"><br>
-  <button onclick="login()">Login</button>
+<!-- YOUR ORIGINAL CONTENT (KEEP YOUR BIG UI HERE) -->
+<section>
+  <h1>Smart Attendance System</h1>
+  <p>Your existing UI remains unchanged 👍</p>
+</section>
+
+<!-- AUTH MODAL -->
+<div class="modal" id="authModal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">✖</span>
+
+    <!-- REGISTER -->
+    <div id="registerBox">
+      <h3>Register</h3>
+      <input id="r_name" placeholder="Name">
+      <input id="r_phone" placeholder="Phone">
+      <input id="r_pass" type="password" placeholder="Password">
+      <select id="r_type">
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+      </select>
+      <button onclick="register()">Register</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginBox" style="display:none">
+      <h3>Login</h3>
+      <input id="l_phone" placeholder="Phone">
+      <input id="l_pass" type="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+    </div>
+
+    <!-- OTP -->
+    <div id="otpBox" style="display:none">
+      <h3>Enter OTP</h3>
+      <input id="otp_phone" placeholder="Phone">
+      <input id="otp_val" placeholder="OTP">
+      <button onclick="verify()">Verify</button>
+    </div>
+
+  </div>
+</div>
 
 <script>
-async function register(){
-  let res = await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({name:r_name.value,phone:r_phone.value,password:r_pass.value,type:r_type.value})});
-  alert((await res.json()).message);
+function openModal(type){
+  document.getElementById('authModal').style.display='flex'
+  document.getElementById('registerBox').style.display = type==='register'?'block':'none'
+  document.getElementById('loginBox').style.display = type==='login'?'block':'none'
+  document.getElementById('otpBox').style.display = 'none'
 }
 
-async function verify(){
-  let res = await fetch('/verify',{method:'POST',headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({phone:v_phone.value,otp:v_otp.value})});
-  alert((await res.json()).message);
+function closeModal(){
+  document.getElementById('authModal').style.display='none'
+}
+
+async function register(){
+  let res = await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({name:r_name.value,phone:r_phone.value,password:r_pass.value,type:r_type.value})})
+  alert((await res.json()).message)
+  document.getElementById('otpBox').style.display='block'
 }
 
 async function login(){
   let res = await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({phone:l_phone.value,password:l_pass.value})});
-  alert((await res.json()).message);
+  body:JSON.stringify({phone:l_phone.value,password:l_pass.value})})
+  alert((await res.json()).message)
+  document.getElementById('otpBox').style.display='block'
+}
+
+async function verify(){
+  let res = await fetch('/verify',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({phone:otp_phone.value,otp:otp_val.value})})
+  alert((await res.json()).message)
 }
 </script>
+
 </body>
 </html>
-
-
-<!-- ================= BACKEND ================= -->
-<!-- Save as: app.py -->
-from flask import Flask, request, jsonify, render_template
-import sqlite3, random, time
-
-app = Flask(__name__)
-
-# DB INIT
-def init_db():
-    conn = sqlite3.connect('db.sqlite3')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users (
-        phone TEXT PRIMARY KEY,
-        name TEXT,
-        password TEXT,
-        type TEXT,
-        otp INTEGER,
-        otp_expiry REAL,
-        verified INTEGER
-    )''')
-    conn.commit()
-    conn.close()
-
-init_db()
-
-# SEND OTP (console for now)
-def send_otp(phone, otp):
-    print(f"OTP for {phone}: {otp}")
-
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/register', methods=['POST'])
-def register():
-    data = request.json
-    otp = random.randint(100000,999999)
-
-    conn = sqlite3.connect('db.sqlite3')
-    c = conn.cursor()
-    c.execute("INSERT OR REPLACE INTO users VALUES (?,?,?,?,?,?,?)",
-              (data['phone'], data['name'], data['password'], data['type'], otp, time.time()+300, 0))
-    conn.commit()
-    conn.close()
-
-    send_otp(data['phone'], otp)
-
-    return jsonify({"message":"OTP sent"})
-
-@app.route('/verify', methods=['POST'])
-def verify():
-    data = request.json
-
-    conn = sqlite3.connect('db.sqlite3')
-    c = conn.cursor()
-    c.execute("SELECT otp, otp_expiry FROM users WHERE phone=?", (data['phone'],))
-    row = c.fetchone()
-
-    if row and int(data['otp']) == row[0] and time.time() < row[1]:
-        c.execute("UPDATE users SET verified=1 WHERE phone=?", (data['phone'],))
-        conn.commit()
-        conn.close()
-        return jsonify({"message":"Verified"})
-
-    conn.close()
-    return jsonify({"message":"Invalid OTP"})
-
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.json
-
-    conn = sqlite3.connect('db.sqlite3')
-    c = conn.cursor()
-    c.execute("SELECT password, verified FROM users WHERE phone=?", (data['phone'],))
-    row = c.fetchone()
-
-    if row and row[0]==data['password']:
-        if row[1]==0:
-            return jsonify({"message":"Verify account first"})
-
-        otp = random.randint(100000,999999)
-        c.execute("UPDATE users SET otp=?, otp_expiry=? WHERE phone=?",
-                  (otp, time.time()+300, data['phone']))
-        conn.commit()
-        conn.close()
-
-        send_otp(data['phone'], otp)
-        return jsonify({"message":"Login OTP sent"})
-
-    conn.close()
-    return jsonify({"message":"Invalid credentials"})
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
-<!-- ================= REQUIREMENTS ================= -->
-<!-- Save as: requirements.txt -->
-flask
-
-
-<!-- ================= HOW TO RUN ================= -->
-# 1. pip install -r requirements.txt
-# 2. python app.py
-# 3. open http://127.0.0.1:5000
-
-
-<!-- ================= OPTIONAL (REAL SMS) ================= -->
-# Replace send_otp() using Twilio or Fast2SMS
