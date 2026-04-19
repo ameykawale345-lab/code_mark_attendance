@@ -1,1364 +1,160 @@
+<!-- ================= FRONTEND ================= -->
+<!-- Save as: templates/index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Attendance System | Ideathon Project</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --ink: #0d0d0d;
-      --bg: #f5f2ec;
-      --accent: #e04c2f;
-      --accent2: #2f6ae0;
-      --muted: #7a7670;
-      --card-bg: #ffffff;
-      --border: #d9d4cc;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      overflow-x: hidden;
-    }
-
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.1rem 3rem;
-      background: rgba(245,242,236,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
-    }
-    nav .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 1.1rem;
-      letter-spacing: -0.02em;
-    }
-    nav .logo span { color: var(--accent); }
-    nav ul {
-      list-style: none;
-      display: flex; gap: 2.5rem;
-    }
-    nav ul a {
-      text-decoration: none; color: var(--muted);
-      font-size: 0.85rem; font-weight: 500;
-      letter-spacing: 0.04em; text-transform: uppercase;
-      transition: color 0.2s;
-    }
-    nav ul a:hover { color: var(--ink); }
-
-    /* ── HERO ── */
-    .hero {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      padding: 8rem 3rem 4rem;
-      gap: 4rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; top: -10%; right: -5%;
-      width: 55vw; height: 55vw;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(224,76,47,0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--accent);
-      margin-bottom: 1.4rem;
-    }
-    .hero-eyebrow::before {
-      content: '';
-      width: 24px; height: 2px; background: var(--accent);
-    }
-    .hero h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(2.6rem, 5vw, 4.2rem);
-      font-weight: 800;
-      line-height: 1.08;
-      letter-spacing: -0.03em;
-      margin-bottom: 1.5rem;
-    }
-    .hero h1 em {
-      font-style: normal;
-      color: var(--accent);
-    }
-    .hero-desc {
-      font-size: 1.05rem; line-height: 1.75;
-      color: #4a4744; max-width: 480px;
-      margin-bottom: 2.4rem;
-    }
-    .hero-cta {
-      display: flex; gap: 1rem; flex-wrap: wrap;
-    }
-    .btn {
-      display: inline-block;
-      padding: 0.85rem 2rem;
-      border-radius: 4px;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700; font-size: 0.9rem;
-      letter-spacing: 0.02em;
-      text-decoration: none;
-      transition: transform 0.15s, box-shadow 0.15s;
-      cursor: pointer; border: none;
-    }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-    .btn-primary { background: var(--ink); color: #fff; }
-    .btn-outline {
-      background: transparent; color: var(--ink);
-      border: 2px solid var(--ink);
-    }
-    .hero-visual {
-      position: relative;
-    }
-    .system-flow-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.4rem 2rem;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.07);
-    }
-    .flow-label {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.75rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: var(--muted); margin-bottom: 1.8rem;
-    }
-    .flow-steps {
-      display: flex; flex-direction: column; gap: 0;
-    }
-    .flow-step {
-      display: flex; align-items: center; gap: 1rem;
-      opacity: 0;
-      animation: fadeInStep 0.5s ease forwards;
-    }
-    .flow-step:nth-child(1) { animation-delay: 0.3s; }
-    .flow-step:nth-child(2) { animation-delay: 0.55s; }
-    .flow-step:nth-child(3) { animation-delay: 0.8s; }
-    .flow-step:nth-child(4) { animation-delay: 1.05s; }
-    .flow-step:nth-child(5) { animation-delay: 1.3s; }
-    @keyframes fadeInStep {
-      from { opacity: 0; transform: translateX(-16px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    .step-icon {
-      width: 44px; height: 44px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; flex-shrink: 0;
-    }
-    .step-text strong {
-      display: block;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.95rem; font-weight: 700;
-    }
-    .step-text small { font-size: 0.78rem; color: var(--muted); }
-    .flow-arrow {
-      width: 2px; height: 20px; background: var(--border);
-      margin-left: 21px; flex-shrink: 0;
-    }
-    .team-badge {
-      margin-top: 2rem; padding: 1rem 1.2rem;
-      background: #f5f2ec; border-radius: 8px;
-      display: flex; align-items: center; gap: 0.8rem;
-    }
-    .team-badge .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #22c55e; flex-shrink: 0;
-      animation: pulse 2s ease infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.4); }
-    }
-    .team-badge span { font-size: 0.82rem; color: var(--muted); }
-    .team-badge strong { color: var(--ink); }
-
-    /* ── SECTIONS ── */
-    section { padding: 6rem 3rem; }
-    .section-header { margin-bottom: 3.5rem; }
-    .section-label {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--accent);
-      margin-bottom: 0.8rem;
-    }
-    .section-label::before { content: ''; width: 20px; height: 2px; background: var(--accent); }
-    .section-header h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(2rem, 3.5vw, 3rem);
-      font-weight: 800; line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-    .section-header p {
-      margin-top: 1rem; font-size: 1rem;
-      color: var(--muted); max-width: 520px; line-height: 1.7;
-    }
-
-    /* ── PROBLEM ── */
-    #problem { background: var(--ink); color: #f5f2ec; }
-    #problem .section-label { color: #e04c2f; }
-    #problem .section-label::before { background: #e04c2f; }
-    #problem .section-header h2 { color: #f5f2ec; }
-    #problem .section-header p { color: #8a8580; }
-
-    .problem-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-    }
-    .problem-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px; padding: 1.8rem;
-      transition: background 0.2s, transform 0.2s;
-    }
-    .problem-card:hover {
-      background: rgba(255,255,255,0.09);
-      transform: translateY(-4px);
-    }
-    .problem-card .icon {
-      font-size: 1.8rem; margin-bottom: 1rem;
-    }
-    .problem-card h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem; font-weight: 700;
-      margin-bottom: 0.5rem; color: #f5f2ec;
-    }
-    .problem-card p { font-size: 0.88rem; color: #8a8580; line-height: 1.65; }
-
-    /* ── APPROACH ── */
-    #approach { background: var(--bg); }
-    .approach-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      align-items: start;
-    }
-    .approach-list { display: flex; flex-direction: column; gap: 1.2rem; }
-    .approach-item {
-      display: flex; gap: 1.2rem; align-items: flex-start;
-      padding: 1.4rem 1.6rem;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      transition: box-shadow 0.2s, transform 0.2s;
-    }
-    .approach-item:hover {
-      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
-      transform: translateX(4px);
-    }
-    .approach-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.6rem; font-weight: 800;
-      color: var(--accent); line-height: 1;
-      min-width: 36px;
-    }
-    .approach-item h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem;
-    }
-    .approach-item p { font-size: 0.87rem; color: var(--muted); line-height: 1.6; }
-    .approach-rationale {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px; padding: 2rem;
-      position: sticky; top: 100px;
-    }
-    .approach-rationale h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;
-    }
-    .approach-rationale p { font-size: 0.92rem; color: var(--muted); line-height: 1.7; }
-    .highlight-box {
-      margin-top: 1.5rem;
-      padding: 1rem 1.2rem;
-      background: rgba(224,76,47,0.06);
-      border-left: 3px solid var(--accent);
-      border-radius: 4px;
-    }
-    .highlight-box p { color: var(--ink); font-size: 0.9rem; font-weight: 500; }
-
-    /* ── PROGRESS ── */
-    #progress { background: #f0ede5; }
-    .progress-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-    .progress-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 2rem;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .progress-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.09);
-    }
-    .progress-card .tag {
-      display: inline-block;
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.7rem; font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      margin-bottom: 1rem;
-    }
-    .tag-done { background: rgba(34,197,94,0.12); color: #16a34a; }
-    .tag-progress { background: rgba(47,106,224,0.12); color: #2f6ae0; }
-    .tag-future { background: rgba(224,76,47,0.1); color: var(--accent); }
-    .progress-card h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.1rem; font-weight: 700; margin-bottom: 0.8rem;
-    }
-    .progress-card ul {
-      list-style: none;
-      display: flex; flex-direction: column; gap: 0.5rem;
-    }
-    .progress-card ul li {
-      display: flex; align-items: center; gap: 0.6rem;
-      font-size: 0.88rem; color: var(--muted);
-    }
-    .progress-card ul li::before {
-      content: '→';
-      color: var(--accent); font-weight: 700; flex-shrink: 0;
-    }
-
-    /* ── TECH DETAILS ── */
-    #tech { background: var(--bg); }
-    .tech-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 3rem; align-items: start;
-    }
-    .db-table {
-      background: var(--ink); border-radius: 12px;
-      overflow: hidden; font-family: 'DM Mono', 'Courier New', monospace;
-    }
-    .db-header {
-      padding: 1rem 1.4rem;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex; align-items: center; gap: 0.7rem;
-    }
-    .db-header .dots { display: flex; gap: 6px; }
-    .db-header .dot2 { width: 10px; height: 10px; border-radius: 50%; }
-    .db-header span {
-      font-size: 0.8rem; color: #7a7680; margin-left: auto;
-    }
-    .db-body { padding: 1.4rem; }
-    .db-row {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      font-size: 0.82rem; padding: 0.5rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      color: #c5c0b8;
-    }
-    .db-row.header { color: #7a7680; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; }
-    .db-col-key { color: #e04c2f; }
-    .db-col-type { color: #7dd3fc; }
-
-    .tech-features { display: flex; flex-direction: column; gap: 1.2rem; }
-    .tech-feat {
-      padding: 1.4rem 1.6rem;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-    }
-    .tech-feat .feat-header {
-      display: flex; align-items: center; gap: 0.8rem;
-      margin-bottom: 0.6rem;
-    }
-    .feat-icon {
-      width: 34px; height: 34px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
-    }
-    .tech-feat h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.95rem; font-weight: 700;
-    }
-    .tech-feat p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
-
-    /* ── TEAM ── */
-    #team { background: #f0ede5; }
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1.2rem;
-    }
-    .team-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.8rem 1.4rem;
-      text-align: center;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .team-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-    }
-    .avatar {
-      width: 54px; height: 54px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 1.2rem;
-      color: #fff; margin: 0 auto 1rem;
-    }
-    .team-card h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem;
-    }
-    .team-card span { font-size: 0.8rem; color: var(--muted); }
-    .mentor-card {
-      background: var(--ink); color: #f5f2ec;
-      border-color: var(--ink);
-    }
-    .mentor-card h3 { color: #f5f2ec; }
-    .mentor-card span { color: #8a8580; }
-
-    /* ── FOOTER ── */
-    footer {
-      background: var(--ink); color: #f5f2ec;
-      padding: 4rem 3rem 2.5rem;
-      text-align: center;
-    }
-    footer .f-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.8rem; font-weight: 800;
-      letter-spacing: -0.03em; margin-bottom: 0.6rem;
-    }
-    footer .f-title span { color: var(--accent); }
-    footer p { font-size: 0.88rem; color: #7a7680; margin-bottom: 2rem; }
-    footer .f-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 1.5rem 0; }
-    footer small { color: #5a5650; font-size: 0.8rem; }
-
-    /* ── SCROLL ANIMATION ── */
-    .reveal {
-      opacity: 0; transform: translateY(30px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .reveal.visible { opacity: 1; transform: none; }
-
-    /* ── LIVE DEMO ── */
-    #demo { background: var(--ink); color: #f5f2ec; }
-    #demo .section-label { color: var(--accent); }
-    #demo .section-label::before { background: var(--accent); }
-    #demo .section-header h2 { color: #f5f2ec; }
-    #demo .section-header p { color: #8a8580; }
-
-    .demo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      align-items: start;
-    }
-    .demo-panel {
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    .demo-panel-header {
-      padding: 1rem 1.4rem;
-      display: flex; align-items: center; gap: 0.7rem;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .demo-panel-header .role-badge {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.72rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      padding: 0.25rem 0.7rem; border-radius: 20px;
-    }
-    .badge-teacher { background: rgba(254,188,46,0.15); color: #febc2e; }
-    .badge-student { background: rgba(47,106,224,0.2); color: #7eb3ff; }
-    .demo-panel-header span.panel-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.95rem; font-weight: 700; color: #f5f2ec;
-    }
-    .demo-panel-body { padding: 1.8rem; background: rgba(255,255,255,0.03); }
-
-    /* teacher panel */
-    .class-info {
-      display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
-    }
-    .class-info-item {
-      flex: 1; min-width: 100px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 8px; padding: 0.8rem 1rem;
-    }
-    .class-info-item label {
-      display: block; font-size: 0.68rem;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: #7a7680; margin-bottom: 0.3rem;
-    }
-    .class-info-item select, .class-info-item input {
-      background: transparent; border: none; outline: none;
-      color: #f5f2ec; font-family: 'DM Sans', sans-serif;
-      font-size: 0.92rem; font-weight: 500; width: 100%;
-      cursor: pointer;
-    }
-    .class-info-item select option { background: #1a1a1a; }
-
-    .generate-btn {
-      width: 100%; padding: 0.95rem;
-      background: var(--accent); color: #fff;
-      border: none; border-radius: 8px;
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem; font-weight: 700;
-      cursor: pointer; transition: opacity 0.2s, transform 0.15s;
-      letter-spacing: 0.02em;
-    }
-    .generate-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
-    .generate-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-    .code-display {
-      margin-top: 1.5rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px; padding: 1.4rem;
-      text-align: center;
-      display: none;
-    }
-    .code-display.show { display: block; }
-    .code-display .code-label {
-      font-size: 0.7rem; text-transform: uppercase;
-      letter-spacing: 0.12em; color: #7a7680; margin-bottom: 0.6rem;
-    }
-    .code-value {
-      font-family: 'Syne', sans-serif;
-      font-size: 2.8rem; font-weight: 800;
-      letter-spacing: 0.3em; color: #febc2e;
-      margin-bottom: 0.8rem;
-    }
-    .timer-bar-wrap {
-      background: rgba(255,255,255,0.08);
-      border-radius: 4px; height: 6px; overflow: hidden;
-    }
-    .timer-bar {
-      height: 100%; border-radius: 4px;
-      background: #22c55e;
-      transition: width 1s linear, background 0.3s;
-    }
-    .timer-text {
-      font-size: 0.8rem; color: #8a8580; margin-top: 0.5rem;
-    }
-    .code-expired {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.85rem; font-weight: 700;
-      color: var(--accent); margin-top: 0.4rem;
-      display: none;
-    }
-
-    .attendance-log {
-      margin-top: 1.4rem;
-    }
-    .log-title {
-      font-size: 0.7rem; text-transform: uppercase;
-      letter-spacing: 0.1em; color: #7a7680; margin-bottom: 0.7rem;
-    }
-    .log-list {
-      display: flex; flex-direction: column; gap: 0.5rem;
-      max-height: 160px; overflow-y: auto;
-    }
-    .log-list::-webkit-scrollbar { width: 4px; }
-    .log-list::-webkit-scrollbar-track { background: transparent; }
-    .log-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-    .log-entry {
-      display: flex; align-items: center; gap: 0.7rem;
-      padding: 0.6rem 0.8rem;
-      background: rgba(255,255,255,0.04);
-      border-radius: 6px; font-size: 0.82rem;
-      animation: slideIn 0.3s ease;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .log-entry .le-status {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-    }
-    .le-ok { background: #22c55e; }
-    .le-fail { background: var(--accent); }
-    .log-entry .le-name { color: #f5f2ec; font-weight: 500; flex: 1; }
-    .log-entry .le-reason { color: #7a7680; font-size: 0.75rem; }
-    .log-entry .le-time { color: #5a5650; font-size: 0.72rem; }
-    .log-empty { color: #5a5650; font-size: 0.85rem; font-style: italic; }
-
-    /* student panel */
-    .student-select-wrap { margin-bottom: 1.2rem; }
-    .demo-label {
-      display: block; font-size: 0.7rem;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: #7a7680; margin-bottom: 0.5rem;
-    }
-    .demo-select, .demo-input {
-      width: 100%; padding: 0.75rem 1rem;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px; color: #f5f2ec;
-      font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
-      outline: none; transition: border-color 0.2s;
-    }
-    .demo-select:focus, .demo-input:focus {
-      border-color: rgba(255,255,255,0.3);
-    }
-    .demo-select option { background: #1a1a1a; }
-    .code-input-row {
-      display: flex; gap: 0.7rem; margin-bottom: 1.2rem;
-    }
-    .demo-input { flex: 1; letter-spacing: 0.2em; font-weight: 700; text-transform: uppercase; }
-
-    .ip-display {
-      margin-bottom: 1.4rem;
-      padding: 0.8rem 1rem;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 8px;
-      display: flex; align-items: center; gap: 0.8rem;
-    }
-    .ip-display .ip-dot {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-    }
-    .ip-ok { background: #22c55e; }
-    .ip-bad { background: var(--accent); }
-    .ip-display span { font-size: 0.82rem; color: #8a8580; }
-    .ip-display strong { color: #f5f2ec; font-size: 0.82rem; }
-
-    .submit-btn {
-      width: 100%; padding: 0.95rem;
-      background: var(--accent2); color: #fff;
-      border: none; border-radius: 8px;
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem; font-weight: 700;
-      cursor: pointer; transition: opacity 0.2s, transform 0.15s;
-    }
-    .submit-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-
-    .result-box {
-      margin-top: 1.2rem; padding: 1.1rem 1.2rem;
-      border-radius: 10px; display: none;
-      animation: fadeInResult 0.35s ease;
-    }
-    @keyframes fadeInResult {
-      from { opacity: 0; transform: scale(0.97); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    .result-box.show { display: flex; align-items: center; gap: 0.8rem; }
-    .result-box.success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); }
-    .result-box.error { background: rgba(224,76,47,0.12); border: 1px solid rgba(224,76,47,0.25); }
-    .result-icon { font-size: 1.4rem; }
-    .result-box .result-msg { font-size: 0.88rem; font-weight: 500; }
-    .result-box.success .result-msg { color: #86efac; }
-    .result-box.error .result-msg { color: #fca5a5; }
-
-    .checks-list {
-      margin-top: 1.2rem;
-      display: flex; flex-direction: column; gap: 0.5rem;
-    }
-    .check-item {
-      display: flex; align-items: center; gap: 0.7rem;
-      font-size: 0.82rem; color: #7a7680;
-    }
-    .check-item .ci-icon { font-size: 0.9rem; width: 18px; text-align: center; }
-    .check-item.pass { color: #86efac; }
-    .check-item.fail { color: #fca5a5; }
-    .check-item.pending { color: #7a7680; }
-
-    .network-toggle {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1rem;
-      padding: 0.8rem 1rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 8px;
-    }
-    .network-toggle span { font-size: 0.85rem; color: #c5c0b8; }
-    .toggle-switch {
-      position: relative; width: 40px; height: 22px;
-      cursor: pointer;
-    }
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
-    .toggle-track {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255,255,255,0.1);
-      border-radius: 22px; transition: background 0.2s;
-    }
-    .toggle-track::after {
-      content: ''; position: absolute;
-      width: 16px; height: 16px; border-radius: 50%;
-      background: #fff; top: 3px; left: 3px;
-      transition: transform 0.2s;
-    }
-    .toggle-switch input:checked + .toggle-track { background: #22c55e; }
-    .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); }
-
-    .demo-note {
-      margin-top: 2rem; padding: 1rem 1.2rem;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 8px;
-      font-size: 0.82rem; color: #7a7680; line-height: 1.6;
-      text-align: center;
-    }
-    .demo-note strong { color: #c5c0b8; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 800px) {
-      nav ul { display: none; }
-      nav { padding: 1rem 1.5rem; }
-      .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 4rem; }
-      .hero-visual { display: none; }
-      section { padding: 4rem 1.5rem; }
-      .approach-grid, .tech-grid, .demo-grid { grid-template-columns: 1fr; }
-      .approach-rationale { position: static; }
-    }
-  </style>
-<link rel="manifest" href="manifest.json">
+  <title>SmartAttend Auth</title>
 </head>
 <body>
+  <h2>Register</h2>
+  <input id="r_name" placeholder="Name"><br>
+  <input id="r_phone" placeholder="Phone"><br>
+  <input id="r_pass" placeholder="Password" type="password"><br>
+  <select id="r_type">
+    <option value="student">Student</option>
+    <option value="teacher">Teacher</option>
+  </select><br>
+  <button onclick="register()">Register</button>
 
-<!-- NAV -->
-<nav>
-  <div class="logo">Smart<span>Attend</span></div>
-  <ul>
-    <li><a href="#problem">Problem</a></li>
-    <li><a href="#approach">Approach</a></li>
-    <li><a href="#progress">Progress</a></li>
-    <li><a href="#tech">Tech</a></li>
-    <li><a href="#team">Team</a></li>
-    <li><a href="#demo" style="color:var(--accent);font-weight:700">Live Demo</a></li>
-  </ul>
-</nav>
+  <h2>Verify OTP</h2>
+  <input id="v_phone" placeholder="Phone"><br>
+  <input id="v_otp" placeholder="OTP"><br>
+  <button onclick="verify()">Verify</button>
 
-<!-- HERO -->
-<section class="hero" id="home">
-  <div class="hero-left">
-    <div class="hero-eyebrow">Ideathon 2025 Project</div>
-    <h1>Smart Attendance<br/>with <em>Code</em><br/>Restriction</h1>
-    <p class="hero-desc">
-      A practical, secure attendance system that prevents proxy marking through
-      time-based validation, one-time submission, and network-level IP restriction.
-    </p>
-    <div class="hero-cta">
-      <a href="#problem" class="btn btn-primary">Explore the Problem</a>
-      <a href="#progress" class="btn btn-outline">See Our Progress</a>
-    </div>
-  </div>
-
-  <div class="hero-visual">
-    <div class="system-flow-card">
-      <div class="flow-label">System Flow</div>
-      <div class="flow-steps">
-        <div class="flow-step">
-          <div class="step-icon" style="background:#fef3c7">👨‍🏫</div>
-          <div class="step-text">
-            <strong>Teacher</strong>
-            <small>Generates a time-limited code</small>
-          </div>
-        </div>
-        <div class="flow-arrow"></div>
-        <div class="flow-step">
-          <div class="step-icon" style="background:#dbeafe">🔑</div>
-          <div class="step-text">
-            <strong>Code Generated</strong>
-            <small>Valid for 2 minutes only</small>
-          </div>
-        </div>
-        <div class="flow-arrow"></div>
-        <div class="flow-step">
-          <div class="step-icon" style="background:#ede9fe">📱</div>
-          <div class="step-text">
-            <strong>Student Submits</strong>
-            <small>Enters code from classroom</small>
-          </div>
-        </div>
-        <div class="flow-arrow"></div>
-        <div class="flow-step">
-          <div class="step-icon" style="background:#fee2e2">🛡️</div>
-          <div class="step-text">
-            <strong>System Checks</strong>
-            <small>Time · IP · Duplicate validation</small>
-          </div>
-        </div>
-        <div class="flow-arrow"></div>
-        <div class="flow-step">
-          <div class="step-icon" style="background:#d1fae5">✅</div>
-          <div class="step-text">
-            <strong>Attendance Marked</strong>
-            <small>Secure & verified entry</small>
-          </div>
-        </div>
-      </div>
-      <div class="team-badge">
-        <div class="dot"></div>
-        <span>Guided by <strong>DR. Nitin Bhone Sir</strong></span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROBLEM -->
-<section id="problem">
-  <div class="section-header reveal">
-    <div class="section-label">The Problem</div>
-    <h2>Current systems are<br/>easy to manipulate</h2>
-    <p>In many colleges, attendance systems are insecure. Students share codes, submit late, or mark attendance from outside the classroom.</p>
-  </div>
-  <div class="problem-grid">
-    <div class="problem-card reveal">
-      <div class="icon">🔗</div>
-      <h3>Code Sharing</h3>
-      <p>Students freely share attendance codes with absent classmates, making the entire system unreliable.</p>
-    </div>
-    <div class="problem-card reveal">
-      <div class="icon">📍</div>
-      <h3>No Location Check</h3>
-      <p>No restriction on where attendance is submitted — students can mark from home or outside campus entirely.</p>
-    </div>
-    <div class="problem-card reveal">
-      <div class="icon">⏰</div>
-      <h3>No Time Window</h3>
-      <p>Codes remain valid indefinitely, letting students submit attendance hours after the class ends.</p>
-    </div>
-    <div class="problem-card reveal">
-      <div class="icon">♾️</div>
-      <h3>Duplicate Entries</h3>
-      <p>Existing systems allow multiple submissions for the same student on the same day without restriction.</p>
-    </div>
-  </div>
-</section>
-
-<!-- APPROACH -->
-<section id="approach">
-  <div class="section-header reveal">
-    <div class="section-label">Our Approach</div>
-    <h2>3 simple restrictions,<br/>1 robust solution</h2>
-    <p>Instead of complex AI or biometrics, we chose a practical, deployable approach combining three core restrictions.</p>
-  </div>
-  <div class="approach-grid">
-    <div class="approach-list">
-      <div class="approach-item reveal">
-        <div class="approach-num">01</div>
-        <div>
-          <h3>Time-Based Validation</h3>
-          <p>Each attendance code expires after exactly 2 minutes. Late submissions are automatically rejected by the system.</p>
-        </div>
-      </div>
-      <div class="approach-item reveal">
-        <div class="approach-num">02</div>
-        <div>
-          <h3>One-Time Submission</h3>
-          <p>The database tracks each student per date. Once attendance is recorded, no second submission is accepted for that day.</p>
-        </div>
-      </div>
-      <div class="approach-item reveal">
-        <div class="approach-num">03</div>
-        <div>
-          <h3>Network / IP Restriction</h3>
-          <p>Student IP is captured via Flask and validated against the classroom's local WiFi network, ensuring physical presence.</p>
-        </div>
-      </div>
-    </div>
-    <div class="approach-rationale reveal">
-      <h3>Why this approach?</h3>
-      <p>AI-based solutions like face recognition add complexity, cost, and privacy concerns. Our team identified a practical gap — most proxy attendance relies on <em>sharing codes and submitting remotely</em>. By closing those three loopholes specifically, we achieve strong security without over-engineering.</p>
-      <div class="highlight-box">
-        <p>"Simple restrictions, correctly implemented, solve the real problem."</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROGRESS -->
-<section id="progress">
-  <div class="section-header reveal">
-    <div class="section-label">Progress Tracker</div>
-    <h2>Where we are today</h2>
-    <p>A snapshot of completed work, active development, and upcoming features on our roadmap.</p>
-  </div>
-  <div class="progress-grid">
-    <div class="progress-card reveal">
-      <span class="tag tag-done">✓ Completed</span>
-      <h3>Foundation</h3>
-      <ul>
-        <li>Requirement analysis</li>
-        <li>System logic design</li>
-        <li>Basic backend structure</li>
-        <li>Core restriction logic</li>
-      </ul>
-    </div>
-    <div class="progress-card reveal">
-      <span class="tag tag-progress">⚙ In Progress</span>
-      <h3>Core Restrictions</h3>
-      <ul>
-        <li>2-minute code validity window</li>
-        <li>Code + timestamp storage</li>
-        <li>Student ID · date · status DB</li>
-        <li>IP capture via Flask</li>
-        <li>Local WiFi validation</li>
-        <li>Duplicate entry prevention</li>
-      </ul>
-    </div>
-    <div class="progress-card reveal">
-      <span class="tag tag-future">◎ Future Plans</span>
-      <h3>Roadmap</h3>
-      <ul>
-        <li>QR code attendance</li>
-        <li>Face recognition (optional)</li>
-        <li>Mobile-friendly interface</li>
-        <li>Admin dashboard</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- TECH -->
-<section id="tech">
-  <div class="section-header reveal">
-    <div class="section-label">Technical Details</div>
-    <h2>Under the hood</h2>
-    <p>Built with Flask for backend logic and a structured database for secure, duplicate-proof record keeping.</p>
-  </div>
-  <div class="tech-grid">
-    <div class="reveal">
-      <div class="db-table">
-        <div class="db-header">
-          <div class="dots">
-            <div class="dot2" style="background:#ff5f57"></div>
-            <div class="dot2" style="background:#febc2e"></div>
-            <div class="dot2" style="background:#28c840"></div>
-          </div>
-          <span>attendance_records</span>
-        </div>
-        <div class="db-body">
-          <div class="db-row header">
-            <span>Column</span><span>Type</span><span>Constraint</span>
-          </div>
-          <div class="db-row">
-            <span class="db-col-key">student_id</span>
-            <span class="db-col-type">VARCHAR</span>
-            <span>PRIMARY KEY</span>
-          </div>
-          <div class="db-row">
-            <span class="db-col-key">date</span>
-            <span class="db-col-type">DATE</span>
-            <span>NOT NULL</span>
-          </div>
-          <div class="db-row">
-            <span class="db-col-key">status</span>
-            <span class="db-col-type">ENUM</span>
-            <span>present/absent</span>
-          </div>
-          <div class="db-row">
-            <span class="db-col-key">submitted_ip</span>
-            <span class="db-col-type">VARCHAR</span>
-            <span>VALIDATED</span>
-          </div>
-          <div class="db-row">
-            <span class="db-col-key">submitted_at</span>
-            <span class="db-col-type">TIMESTAMP</span>
-            <span>AUTO</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="tech-features">
-      <div class="tech-feat reveal">
-        <div class="feat-header">
-          <div class="feat-icon" style="background:#fef3c7">⏱</div>
-          <h3>2-Minute Code Window</h3>
-        </div>
-        <p>Generation timestamp is stored alongside the code. Submissions arriving after 120 seconds are instantly rejected by Flask middleware.</p>
-      </div>
-      <div class="tech-feat reveal">
-        <div class="feat-header">
-          <div class="feat-icon" style="background:#dbeafe">🌐</div>
-          <h3>IP Capture via Flask</h3>
-        </div>
-        <p>Using <code>request.remote_addr</code> in Flask to capture and validate the student's IP against the allowed classroom subnet.</p>
-      </div>
-      <div class="tech-feat reveal">
-        <div class="feat-header">
-          <div class="feat-icon" style="background:#d1fae5">🚫</div>
-          <h3>Duplicate Prevention</h3>
-        </div>
-        <p>Composite unique constraint on <code>(student_id, date)</code> ensures one record per student per day at the database level.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TEAM -->
-<section id="team">
-  <div class="section-header reveal">
-    <div class="section-label">The Team</div>
-    <h2>Meet the builders</h2>
-    <p>A cross-branch team from AIDS, Computer Science, and IT departments.</p>
-  </div>
-  <div class="team-grid">
-    <div class="team-card reveal">
-      <div class="avatar" style="background:#e04c2f">AK</div>
-      <h3>Amey Kawale</h3>
-      <span>AIDS — Branch B</span>
-    </div>
-    <div class="team-card reveal">
-      <div class="avatar" style="background:#2f6ae0">PL</div>
-      <h3>Purab Laddha</h3>
-      <span>AIDS — Branch B</span>
-    </div>
-    <div class="team-card reveal">
-      <div class="avatar" style="background:#7c3aed">HP</div>
-      <h3>Harshada Patil</h3>
-      <span>Computer Sci — Branch A</span>
-    </div>
-    <div class="team-card reveal">
-      <div class="avatar" style="background:#059669">GG</div>
-      <h3>Gouri Gundewar</h3>
-      <span>Computer Sci — Branch A</span>
-    </div>
-    <div class="team-card reveal">
-      <div class="avatar" style="background:#d97706">AK</div>
-      <h3>Amogh Kawankar</h3>
-      <span>IT — Branch B</span>
-    </div>
-    <div class="team-card mentor-card reveal">
-      <div class="avatar" style="background:#f5f2ec; color:#0d0d0d">NB</div>
-      <h3>DR. Nitin Bhone</h3>
-      <span>Project Mentor</span>
-    </div>
-  </div>
-</section>
-
-<!-- LIVE DEMO -->
-<section id="demo">
-  <div class="section-header reveal">
-    <div class="section-label">Interactive Demo</div>
-    <h2>Try the system<br/>yourself</h2>
-    <p>Simulate the full attendance flow — generate a code as a teacher, then try to submit as a student. All three restrictions are enforced live in your browser.</p>
-  </div>
-
-  <div class="demo-grid">
-
-    <!-- TEACHER PANEL -->
-    <div class="demo-panel reveal">
-      <div class="demo-panel-header">
-        <span class="role-badge badge-teacher">Teacher</span>
-        <span class="panel-title">Generate Attendance Code</span>
-      </div>
-      <div class="demo-panel-body">
-        <div class="class-info">
-          <div class="class-info-item">
-            <label>Subject</label>
-            <select id="subjectSelect">
-              <option>Data Structures</option>
-              <option>Operating Systems</option>
-              <option>Computer Networks</option>
-              <option>Database Systems</option>
-            </select>
-          </div>
-          <div class="class-info-item">
-            <label>Room / IP</label>
-            <input type="text" id="classroomIP" value="192.168.1.x" readonly />
-          </div>
-        </div>
-
-        <button class="generate-btn" id="generateBtn" onclick="generateCode()">
-          🔑 Generate Code (2-min window)
-        </button>
-
-        <div class="code-display" id="codeDisplay">
-          <div class="code-label">Active Attendance Code</div>
-          <div class="code-value" id="codeValue">------</div>
-          <div class="timer-bar-wrap">
-            <div class="timer-bar" id="timerBar" style="width:100%"></div>
-          </div>
-          <div class="timer-text" id="timerText">Valid for 120 seconds</div>
-          <div class="code-expired" id="codeExpired">⛔ Code expired — generate a new one</div>
-        </div>
-
-        <div class="attendance-log" id="attendanceLog">
-          <div class="log-title">Attendance Log</div>
-          <div class="log-list" id="logList">
-            <div class="log-empty">No submissions yet...</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- STUDENT PANEL -->
-    <div class="demo-panel reveal">
-      <div class="demo-panel-header">
-        <span class="role-badge badge-student">Student</span>
-        <span class="panel-title">Submit Attendance</span>
-      </div>
-      <div class="demo-panel-body">
-
-        <div class="student-select-wrap">
-          <label class="demo-label">Select Student</label>
-          <select class="demo-select" id="studentSelect">
-            <option value="S001">Amey Kawale — S001</option>
-            <option value="S002">Purab Laddha — S002</option>
-            <option value="S003">Harshada Patil — S003</option>
-            <option value="S004">Gouri Gundewar — S004</option>
-            <option value="S005">Amogh Kawankar — S005</option>
-          </select>
-        </div>
-
-        <div class="network-toggle">
-          <span>📶 Simulate: Connected to classroom WiFi</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="wifiToggle" checked />
-            <div class="toggle-track"></div>
-          </label>
-        </div>
-
-        <div class="ip-display" id="ipDisplay">
-          <div class="ip-dot ip-ok" id="ipDot"></div>
-          <span>Your IP: <strong id="studentIP">192.168.1.42</strong> &nbsp;·&nbsp; Classroom: <strong>192.168.1.x</strong></span>
-        </div>
-
-        <div class="code-input-row">
-          <input class="demo-input" type="text" id="codeInput" placeholder="Enter code..." maxlength="6" />
-        </div>
-
-        <button class="submit-btn" onclick="submitAttendance()">
-          ✅ Mark Attendance
-        </button>
-
-        <div class="result-box" id="resultBox">
-          <div class="result-icon" id="resultIcon"></div>
-          <div class="result-msg" id="resultMsg"></div>
-        </div>
-
-        <div class="checks-list" id="checksList">
-          <div class="check-item pending" id="chk-code">
-            <span class="ci-icon">○</span> Code validity check
-          </div>
-          <div class="check-item pending" id="chk-time">
-            <span class="ci-icon">○</span> Time window check (2 min)
-          </div>
-          <div class="check-item pending" id="chk-ip">
-            <span class="ci-icon">○</span> Network / IP restriction
-          </div>
-          <div class="check-item pending" id="chk-dup">
-            <span class="ci-icon">○</span> Duplicate submission check
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="demo-note reveal">
-    <strong>📌 This is a browser simulation.</strong> All logic runs in JavaScript to demonstrate the concept.
-    In the real system, validation happens server-side via Flask — the student never sees the code generation timestamp.
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="f-title">Smart<span>Attend</span></div>
-  <p>Ideathon 2025 · Smart Attendance System with Code Restriction</p>
-  <hr class="f-divider" />
-  <small>Built by Amey, Purab, Harshada, Gouri & Amogh · Mentored by DR. Nitin Bhone Sir</small>
-</footer>
+  <h2>Login</h2>
+  <input id="l_phone" placeholder="Phone"><br>
+  <input id="l_pass" placeholder="Password" type="password"><br>
+  <button onclick="login()">Login</button>
 
 <script>
-  // ── SCROLL REVEAL ──
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) {
-        setTimeout(() => e.target.classList.add('visible'), i * 80);
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  reveals.forEach(el => observer.observe(el));
+async function register(){
+  let res = await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({name:r_name.value,phone:r_phone.value,password:r_pass.value,type:r_type.value})});
+  alert((await res.json()).message);
+}
 
-  // ── DEMO STATE ──
-  let currentCode = null;
-  let codeGeneratedAt = null;
-  let timerInterval = null;
-  const CODE_VALIDITY = 120; // seconds
-  const submittedToday = new Set(); // tracks student IDs that already submitted
+async function verify(){
+  let res = await fetch('/verify',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({phone:v_phone.value,otp:v_otp.value})});
+  alert((await res.json()).message);
+}
 
-  // ── WIFI TOGGLE ──
-  const wifiToggle = document.getElementById('wifiToggle');
-  wifiToggle.addEventListener('change', () => {
-    const ipDot = document.getElementById('ipDot');
-    const studentIP = document.getElementById('studentIP');
-    if (wifiToggle.checked) {
-      ipDot.className = 'ip-dot ip-ok';
-      studentIP.textContent = '192.168.1.42';
-    } else {
-      ipDot.className = 'ip-dot ip-bad';
-      studentIP.textContent = '10.0.0.87 (external)';
-    }
-  });
-
-  // ── GENERATE CODE ──
-  function generateCode() {
-    // Clear previous timer
-    if (timerInterval) clearInterval(timerInterval);
-
-    // Generate random 6-char alphanumeric code
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    currentCode = Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-    codeGeneratedAt = Date.now();
-
-    document.getElementById('codeValue').textContent = currentCode;
-    document.getElementById('codeDisplay').classList.add('show');
-    document.getElementById('codeExpired').style.display = 'none';
-    document.getElementById('timerText').style.opacity = '1';
-    document.getElementById('generateBtn').disabled = true;
-
-    // Start countdown
-    timerInterval = setInterval(() => {
-      const elapsed = (Date.now() - codeGeneratedAt) / 1000;
-      const remaining = Math.max(0, CODE_VALIDITY - elapsed);
-      const pct = (remaining / CODE_VALIDITY) * 100;
-
-      document.getElementById('timerBar').style.width = pct + '%';
-      document.getElementById('timerBar').style.background =
-        pct > 50 ? '#22c55e' : pct > 20 ? '#febc2e' : '#e04c2f';
-      document.getElementById('timerText').textContent =
-        remaining > 0 ? `Valid for ${Math.ceil(remaining)} more seconds` : '';
-
-      if (remaining <= 0) {
-        clearInterval(timerInterval);
-        document.getElementById('codeExpired').style.display = 'block';
-        document.getElementById('timerText').style.opacity = '0';
-        document.getElementById('generateBtn').disabled = false;
-        document.getElementById('generateBtn').textContent = '🔑 Generate New Code';
-      }
-    }, 500);
-  }
-
-  // ── SUBMIT ATTENDANCE ──
-  function submitAttendance() {
-    const enteredCode = document.getElementById('codeInput').value.trim().toUpperCase();
-    const studentID = document.getElementById('studentSelect').value;
-    const studentName = document.getElementById('studentSelect').selectedOptions[0].text.split('—')[0].trim();
-    const onClassroomWifi = document.getElementById('wifiToggle').checked;
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-
-    // Reset checks
-    resetChecks();
-
-    // Run validations step by step with small delays for effect
-    setTimeout(() => runValidations(enteredCode, studentID, studentName, onClassroomWifi, timeStr), 100);
-  }
-
-  function resetChecks() {
-    ['chk-code','chk-time','chk-ip','chk-dup'].forEach(id => {
-      const el = document.getElementById(id);
-      el.className = 'check-item pending';
-      el.querySelector('.ci-icon').textContent = '○';
-    });
-    const rb = document.getElementById('resultBox');
-    rb.className = 'result-box';
-    rb.style.display = 'none';
-  }
-
-  function setCheck(id, pass, label) {
-    const el = document.getElementById(id);
-    el.className = 'check-item ' + (pass ? 'pass' : 'fail');
-    el.querySelector('.ci-icon').textContent = pass ? '✓' : '✗';
-    el.childNodes[1].textContent = ' ' + label;
-  }
-
-  function showResult(success, msg) {
-    const rb = document.getElementById('resultBox');
-    rb.className = 'result-box show ' + (success ? 'success' : 'error');
-    rb.style.display = 'flex';
-    document.getElementById('resultIcon').textContent = success ? '🎉' : '🚫';
-    document.getElementById('resultMsg').textContent = msg;
-  }
-
-  function addLog(name, success, reason, time) {
-    const list = document.getElementById('logList');
-    const empty = list.querySelector('.log-empty');
-    if (empty) empty.remove();
-
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerHTML = `
-      <div class="le-status ${success ? 'le-ok' : 'le-fail'}"></div>
-      <span class="le-name">${name}</span>
-      <span class="le-reason">${reason}</span>
-      <span class="le-time">${time}</span>
-    `;
-    list.prepend(entry);
-  }
-
-  function runValidations(enteredCode, studentID, studentName, onWifi, timeStr) {
-    // CHECK 1: Code entered at all
-    const codeValid = currentCode && enteredCode === currentCode;
-    setTimeout(() => {
-      setCheck('chk-code', codeValid, codeValid ? 'Code matched ✓' : enteredCode ? 'Wrong code entered' : 'No code entered');
-      if (!codeValid) {
-        showResult(false, 'Invalid code. Please enter the code displayed by your teacher.');
-        addLog(studentName, false, 'Wrong code', timeStr);
-        return;
-      }
-
-      // CHECK 2: Time window
-      const elapsed = currentCode ? (Date.now() - codeGeneratedAt) / 1000 : 999;
-      const withinTime = elapsed <= CODE_VALIDITY;
-      setTimeout(() => {
-        setCheck('chk-time', withinTime,
-          withinTime ? `Submitted within window (${Math.floor(elapsed)}s elapsed)` : `Code expired (${Math.floor(elapsed)}s ago)`);
-        if (!withinTime) {
-          showResult(false, 'Code has expired. The 2-minute window has passed.');
-          addLog(studentName, false, 'Code expired', timeStr);
-          return;
-        }
-
-        // CHECK 3: IP / WiFi
-        setTimeout(() => {
-          setCheck('chk-ip', onWifi, onWifi ? 'IP matches classroom network' : 'IP not on classroom network');
-          if (!onWifi) {
-            showResult(false, 'Not connected to classroom WiFi. Please connect to the classroom network.');
-            addLog(studentName, false, 'Wrong network', timeStr);
-            return;
-          }
-
-          // CHECK 4: Duplicate
-          const alreadySubmitted = submittedToday.has(studentID);
-          setTimeout(() => {
-            setCheck('chk-dup', !alreadySubmitted,
-              alreadySubmitted ? 'Already submitted today' : 'No duplicate — first submission');
-            if (alreadySubmitted) {
-              showResult(false, 'Attendance already recorded for today. Duplicate submission blocked.');
-              addLog(studentName, false, 'Duplicate', timeStr);
-              return;
-            }
-
-            // ALL PASSED ✓
-            submittedToday.add(studentID);
-            showResult(true, `Attendance marked successfully for ${studentName}!`);
-            addLog(studentName, true, 'Present ✓', timeStr);
-            document.getElementById('codeInput').value = '';
-          }, 350);
-        }, 350);
-      }, 350);
-    }, 150);
-  }
+async function login(){
+  let res = await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({phone:l_phone.value,password:l_pass.value})});
+  alert((await res.json()).message);
+}
 </script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js');}</script>
 </body>
 </html>
+
+
+<!-- ================= BACKEND ================= -->
+<!-- Save as: app.py -->
+from flask import Flask, request, jsonify, render_template
+import sqlite3, random, time
+
+app = Flask(__name__)
+
+# DB INIT
+def init_db():
+    conn = sqlite3.connect('db.sqlite3')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS users (
+        phone TEXT PRIMARY KEY,
+        name TEXT,
+        password TEXT,
+        type TEXT,
+        otp INTEGER,
+        otp_expiry REAL,
+        verified INTEGER
+    )''')
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# SEND OTP (console for now)
+def send_otp(phone, otp):
+    print(f"OTP for {phone}: {otp}")
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    otp = random.randint(100000,999999)
+
+    conn = sqlite3.connect('db.sqlite3')
+    c = conn.cursor()
+    c.execute("INSERT OR REPLACE INTO users VALUES (?,?,?,?,?,?,?)",
+              (data['phone'], data['name'], data['password'], data['type'], otp, time.time()+300, 0))
+    conn.commit()
+    conn.close()
+
+    send_otp(data['phone'], otp)
+
+    return jsonify({"message":"OTP sent"})
+
+@app.route('/verify', methods=['POST'])
+def verify():
+    data = request.json
+
+    conn = sqlite3.connect('db.sqlite3')
+    c = conn.cursor()
+    c.execute("SELECT otp, otp_expiry FROM users WHERE phone=?", (data['phone'],))
+    row = c.fetchone()
+
+    if row and int(data['otp']) == row[0] and time.time() < row[1]:
+        c.execute("UPDATE users SET verified=1 WHERE phone=?", (data['phone'],))
+        conn.commit()
+        conn.close()
+        return jsonify({"message":"Verified"})
+
+    conn.close()
+    return jsonify({"message":"Invalid OTP"})
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+
+    conn = sqlite3.connect('db.sqlite3')
+    c = conn.cursor()
+    c.execute("SELECT password, verified FROM users WHERE phone=?", (data['phone'],))
+    row = c.fetchone()
+
+    if row and row[0]==data['password']:
+        if row[1]==0:
+            return jsonify({"message":"Verify account first"})
+
+        otp = random.randint(100000,999999)
+        c.execute("UPDATE users SET otp=?, otp_expiry=? WHERE phone=?",
+                  (otp, time.time()+300, data['phone']))
+        conn.commit()
+        conn.close()
+
+        send_otp(data['phone'], otp)
+        return jsonify({"message":"Login OTP sent"})
+
+    conn.close()
+    return jsonify({"message":"Invalid credentials"})
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+<!-- ================= REQUIREMENTS ================= -->
+<!-- Save as: requirements.txt -->
+flask
+
+
+<!-- ================= HOW TO RUN ================= -->
+# 1. pip install -r requirements.txt
+# 2. python app.py
+# 3. open http://127.0.0.1:5000
+
+
+<!-- ================= OPTIONAL (REAL SMS) ================= -->
+# Replace send_otp() using Twilio or Fast2SMS
