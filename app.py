@@ -285,7 +285,7 @@ def register():
     store_otp(email, otp)
     send_email(email, "SmartAttend — Verify Your Email", otp_email_body(otp, name))
     log_activity(None, name, 'REGISTER', f'New {utype} registered', request.remote_addr)
-    return jsonify({'message':'OTP sent to your email'}), 200
+    return jsonify({'message':'OTP sent to your email', 'otp': otp, 'name': name}), 200
 
 @app.route('/login', methods=['POST'])
 @limiter.limit("20 per hour")
@@ -300,7 +300,7 @@ def login():
     store_otp(email, otp)
     send_email(email, "SmartAttend — Login OTP", otp_email_body(otp, user['name']))
     log_activity(user['id'], user['name'], 'LOGIN_ATTEMPT', None, request.remote_addr)
-    return jsonify({'message':'OTP sent to your email'}), 200
+    return jsonify({'message':'OTP sent to your email', 'otp': otp, 'name': user['name']}), 200
 
 @app.route('/verify', methods=['POST'])
 @limiter.limit("30 per hour")
@@ -336,7 +336,7 @@ def resend_otp():
     otp = generate_otp()
     store_otp(email, otp)
     send_email(email, "SmartAttend — New OTP", otp_email_body(otp, user['name']))
-    return jsonify({'message':'OTP resent'}), 200
+    return jsonify({'message':'OTP resent', 'otp': otp}), 200
 
 # ─── FACE RECOGNITION ────────────────────────────────────────────────────────
 @app.route('/face/register', methods=['POST'])
